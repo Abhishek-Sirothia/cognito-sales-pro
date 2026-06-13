@@ -2,13 +2,14 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Brain, LayoutDashboard, Users, MessageSquare, BarChart3, Settings, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
-const NAV = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; match?: string };
+const NAV: NavItem[] = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/", label: "Customers", icon: Users, match: "customers" },
   { to: "/", label: "Conversations", icon: MessageSquare, match: "conversations" },
   { to: "/", label: "Memories", icon: Brain, match: "memories" },
   { to: "/insights", label: "Insights", icon: BarChart3 },
-] as const;
+];
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
