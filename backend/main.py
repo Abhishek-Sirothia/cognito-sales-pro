@@ -17,7 +17,9 @@ from datetime import datetime
 # ─────────────────────────────────────────────
 GROQ_API_KEY = "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"
 HINDSIGHT_ENDPOINT = "https://api.hindsight.vectorize.io"
-HINDSIGHT_API_KEY = "hsk_f029ea01adf71a82a4ef28d0638b541b_baea9b5ee371c27a"
+
+
+HINDSIGHT_API_KEY = "hsk_302f0df2c11bb5c071f5a7d521be04cd_0c7765cc5eb5d1e7"
 
 # ─────────────────────────────────────────────
 # CLIENTS
