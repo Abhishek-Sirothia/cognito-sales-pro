@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as ConversationsRouteImport } from './routes/conversations'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CustomerIdRouteImport } from './routes/customer.$id'
 
@@ -19,9 +22,24 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversationsRoute = ConversationsRouteImport.update({
+  id: '/conversations',
+  path: '/conversations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +55,68 @@ const CustomerIdRoute = CustomerIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/conversations': typeof ConversationsRoute
+  '/customers': typeof CustomersRoute
   '/insights': typeof InsightsRoute
+  '/memories': typeof MemoriesRoute
   '/settings': typeof SettingsRoute
   '/customer/$id': typeof CustomerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/conversations': typeof ConversationsRoute
+  '/customers': typeof CustomersRoute
   '/insights': typeof InsightsRoute
+  '/memories': typeof MemoriesRoute
   '/settings': typeof SettingsRoute
   '/customer/$id': typeof CustomerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/conversations': typeof ConversationsRoute
+  '/customers': typeof CustomersRoute
   '/insights': typeof InsightsRoute
+  '/memories': typeof MemoriesRoute
   '/settings': typeof SettingsRoute
   '/customer/$id': typeof CustomerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/insights' | '/settings' | '/customer/$id'
+  fullPaths:
+    | '/'
+    | '/conversations'
+    | '/customers'
+    | '/insights'
+    | '/memories'
+    | '/settings'
+    | '/customer/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/insights' | '/settings' | '/customer/$id'
-  id: '__root__' | '/' | '/insights' | '/settings' | '/customer/$id'
+  to:
+    | '/'
+    | '/conversations'
+    | '/customers'
+    | '/insights'
+    | '/memories'
+    | '/settings'
+    | '/customer/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/conversations'
+    | '/customers'
+    | '/insights'
+    | '/memories'
+    | '/settings'
+    | '/customer/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConversationsRoute: typeof ConversationsRoute
+  CustomersRoute: typeof CustomersRoute
   InsightsRoute: typeof InsightsRoute
+  MemoriesRoute: typeof MemoriesRoute
   SettingsRoute: typeof SettingsRoute
   CustomerIdRoute: typeof CustomerIdRoute
 }
@@ -78,11 +130,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/insights': {
       id: '/insights'
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversations': {
+      id: '/conversations'
+      path: '/conversations'
+      fullPath: '/conversations'
+      preLoaderRoute: typeof ConversationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,7 +177,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConversationsRoute: ConversationsRoute,
+  CustomersRoute: CustomersRoute,
   InsightsRoute: InsightsRoute,
+  MemoriesRoute: MemoriesRoute,
   SettingsRoute: SettingsRoute,
   CustomerIdRoute: CustomerIdRoute,
 }
