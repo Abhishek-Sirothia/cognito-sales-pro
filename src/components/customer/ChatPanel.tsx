@@ -47,7 +47,7 @@ export function ChatPanel({ customer, initialMessages, onBrief, onReflect }: Pro
       {
         id: `a_${Date.now()}`,
         role: "agent",
-        content: res.reply,
+        content: res.response,
         timestamp: nowLabel(),
         memoriesUsed: res.memories_used ?? 0,
       },

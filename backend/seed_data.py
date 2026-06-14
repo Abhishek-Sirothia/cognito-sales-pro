@@ -1,15 +1,18 @@
 """
-MemoryDesk — Synthetic Data Seeder
+MemoryDesk – Synthetic Data Seeder
 Run this ONCE to populate Hindsight with realistic customer history.
 """
 
-from hindsight_client import Hindsight
-import time
+import asyncio
+import aiohttp
 
 HINDSIGHT_ENDPOINT = "https://api.hindsight.vectorize.io"
-HINDSIGHT_API_KEY = "hsk_f029ea01adf71a82a4ef28d0638b541b_baea9b5ee371c27a"
+HINDSIGHT_API_KEY = "hsk_302f0df2c11bb5c071f5a7d521be04cd_0c7765cc5eb5d1e7"
 
-hindsight = Hindsight(HINDSIGHT_ENDPOINT, HINDSIGHT_API_KEY)
+HEADERS = {
+    "Authorization": f"Bearer {HINDSIGHT_API_KEY}",
+    "Content-Type": "application/json",
+}
 
 CUSTOMER_DATA = [
     {
@@ -50,7 +53,7 @@ CUSTOMER_DATA = [
         "name": "Emily Torres",
         "company": "Notion",
         "history": [
-            "Deal closed January 15 2026 at $320,000 for annual enterprise license. Fastest decision maker — 6 weeks from demo to contract.",
+            "Deal closed January 15 2026 at $320,000 for annual enterprise license. Fastest decision maker – 6 weeks from demo to contract.",
             "Onboarding call February 3 2026. Team of 8 sales reps started using platform. Pre-call briefing saved 20-30 min per customer per week.",
             "30-day check-in February 28 2026. Pipeline conversion rate increased 12%. Interested in expanding to customer support team for $80,000.",
             "Emily referred James Wu at Linear and Ana Sousa at Figma as warm leads.",
@@ -69,39 +72,54 @@ CUSTOMER_DATA = [
 ]
 
 
-def seed_all():
+async def create_bank(session, bank_id, name):
+    url = f"{HINDSIGHT_ENDPOINT}/v1/default/banks/{bank_id}"
+    payload = {"name": name}
+    async with session.put(url, json=payload, headers=HEADERS) as resp:
+        if resp.status not in (200, 201, 409):
+            text = await resp.text()
+            raise Exception(f"({resp.status}) {text}")
+
+
+async def retain_memory(session, bank_id, content):
+    # Correct endpoint: POST /v1/default/banks/{bank_id}/memories
+    url = f"{HINDSIGHT_ENDPOINT}/v1/default/banks/{bank_id}/memories"
+    payload = {"items": [{"content": content}]}
+    async with session.post(url, json=payload, headers=HEADERS) as resp:
+        if resp.status not in (200, 201):
+            text = await resp.text()
+            raise Exception(f"({resp.status}) {text}")
+
+
+async def seed_all():
     print("🌱 MemoryDesk Data Seeder Starting...\n")
 
-    for customer in CUSTOMER_DATA:
-        print(f"📋 Processing: {customer['name']} ({customer['company']})")
+    async with aiohttp.ClientSession() as session:
+        for customer in CUSTOMER_DATA:
+            print(f"📋 Processing: {customer['name']} ({customer['company']})")
 
-        try:
-            hindsight.create_bank(
-                bank_id=customer["bank_id"],
-                name=f"{customer['name']} - {customer['company']}",
-            )
-            print(f"   ✅ Memory bank created: {customer['bank_id']}")
-        except Exception as e:
-            print(f"   ⚠️  Bank may already exist: {e}")
-
-        for i, memory in enumerate(customer["history"]):
             try:
-                hindsight.retain(
-                    bank_id=customer["bank_id"],
-                    content=memory,
-                )
-                print(f"   💾 Memory {i+1}/{len(customer['history'])} stored")
-                time.sleep(0.5)
+                await create_bank(session, customer["bank_id"],
+                                  f"{customer['name']} - {customer['company']}")
+                print(f"   ✅ Memory bank created: {customer['bank_id']}")
             except Exception as e:
-                print(f"   ❌ Error storing memory {i+1}: {e}")
+                print(f"   ⚠️  Bank may already exist: {e}")
 
-        print(f"   🎉 Done with {customer['name']}\n")
+            for i, memory in enumerate(customer["history"]):
+                try:
+                    await retain_memory(session, customer["bank_id"], memory)
+                    print(f"   💾 Memory {i+1}/{len(customer['history'])} stored")
+                    await asyncio.sleep(0.5)
+                except Exception as e:
+                    print(f"   ❌ Error storing memory {i+1}: {e}")
 
-    print("✅ All seed data loaded! Your demo is ready.")
-    print("\nCustomers loaded:")
+            print(f"   🎉 Done with {customer['name']}\n")
+
+    print("✅ All seed data loaded! Your demo is ready.\n")
+    print("Customers loaded:")
     for c in CUSTOMER_DATA:
         print(f"  • {c['name']} ({c['company']}) → bank_id: {c['bank_id']}")
 
 
 if __name__ == "__main__":
-    seed_all()
+    asyncio.run(seed_all())

@@ -1,17 +1,18 @@
 // Frontend-only API layer. Falls back to mock data when no backend is reachable.
 import { MOCK_CUSTOMERS, getMemories, getMessages } from "@/data/mock";
 
-const BASE_URL =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
-  "";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function safe<T>(promise: Promise<Response>, fallback: T): Promise<T> {
-  if (!BASE_URL) return fallback;
   try {
     const r = await promise;
-    if (!r.ok) return fallback;
+    if (!r.ok) {
+      console.error("API error:", r.status, r.statusText);
+      return fallback;
+    }
     return (await r.json()) as T;
-  } catch {
+  } catch (e) {
+    console.error("API fetch failed:", e);
     return fallback;
   }
 }
