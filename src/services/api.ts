@@ -1,3 +1,4 @@
+// src/services/api.ts
 // Frontend-only API layer. Falls back to mock data when no backend is reachable.
 import { MOCK_CUSTOMERS, getMemories, getMessages } from "@/data/mock";
 
@@ -29,7 +30,7 @@ export const api = {
 
   chat: async (payload: { customer_id: string; customer_name: string; message: string }) => {
     const fallback = {
-      reply: `Based on what I remember about ${payload.customer_name}, here's my take: ${synthesize(payload.message)}`,
+      response: `Based on what I remember about ${payload.customer_name}, here's my take: ${synthesize(payload.message)}`, // Fixed key from 'reply' to 'response'
       memories_used: 3,
     };
     return safe(
